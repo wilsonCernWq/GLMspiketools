@@ -6,33 +6,38 @@
 % Make sure paths are set (assumes this script called from 'demos' directory)
 cd ..; setpaths; cd demos/
 
-%% 1.  Set parameters and display for GLM % =============================
-
+%% 1. Set parameters and display for GLM % ======================
 dtStim = .01; % Bin size for stimulus (in seconds).  (Equiv to 100Hz frame rate)
 dtSp = .001;  % Bin size for simulating model & computing likelihood (must evenly divide dtStim);
-nkt = 30;    % Number of time bins in stimulus filter k
+nkt = 30;     % Number of time bins in stimulus filter k
 ggsim = makeSimStruct_GLM(nkt,dtStim,dtSp); % Create GLM structure with default params
 
-% === Plot true model params =======================
-clf;
+% Plot true model params
 ttk = dtStim*(-nkt+1:0)';  % time relative to spike of stim filter taps
-subplot(221);plot(ttk, ggsim.k);
-title('stimulus kernel'); xlabel('time (s)');
+figure;
 
-subplot(222); % --------
+subplot(2,2,1);  % --------
+plot(ttk, ggsim.k);
+title('stimulus kernel'); 
+xlabel('time (s)');
+
+subplot(2,2,2);  % --------
 plot(ggsim.iht, ggsim.iht*0, 'k--', ggsim.iht, ggsim.ih);
-title('post-spike kernel h'); axis tight;
+title('post-spike kernel h'); 
+axis tight;
 xlabel('time after spike (s)');
-set(gca, 'ylim',[min(ggsim.ih)*1.1 max(ggsim.ih)*1.5]);
+set(gca,'ylim',[min(ggsim.ih)*1.1 max(ggsim.ih)*1.5]);
 
-subplot(224); % --------
+subplot(2,2,3:4); % --------
 [iht,ihbasOrthog,ihbasis] = makeBasis_PostSpike(ggsim.ihbasprs,dtSp);
-plot(ggsim.iht, ihbasis);  title('basis for h'); axis tight;
+plot(ggsim.iht, ihbasis);  
+title('basis for h'); 
+axis tight;
 
 
-%% 2. Generate some training data  %========================================
+%% 2. Generate some training data  % ============================
 slen = 50000; % Stimulus length (frames); more samples gives better fit
-swid = 1;  % Stimulus width  (pixels); must match # pixels in stim filter
+swid = 1;     % Stimulus width  (pixels); must match # pixels in stim filter
 
 % Make stimulus
 Stim = rand(slen,swid)*2-1;  % Stimulate model to long, unif-random stimulus
@@ -40,27 +45,29 @@ Stim = rand(slen,swid)*2-1;  % Stimulate model to long, unif-random stimulus
 % Simulate model
 [tsp,sps,Itot,Istm] = simGLM(ggsim,Stim);  % run model
 
-% --- Make plot of first 0.5 seconds of data --------
+% Make plot of first 0.5 seconds of data
 tlen = 0.5;
 ttstim = dtStim:dtStim:tlen; iistim = 1:length(ttstim);
-subplot(311); 
+figure;
+
+subplot(311); % --------
 plot(ttstim,Stim(iistim));
 title('stimulus');
 
-subplot(312);
+subplot(312); % --------
 ttspk = dtSp:dtSp:tlen; iispk = 1:length(ttspk);
 spinds = sps(iispk)>0;
 semilogy(ttspk,exp(Itot(iispk)),ttspk(spinds), exp(Itot(spinds)), 'ko');
 ylabel('spike rate (sp/s)');
 title('conditional intensity (and spikes)');
 
-subplot(313); 
+subplot(313); % --------
 Isp = Itot-Istm; % total spike-history filter output
 plot(ttspk,Istm(iispk), ttspk,Isp(iispk)); axis tight;
 legend('k output', 'h output'); xlabel('time (s)');
 ylabel('log intensity'); title('filter outputs');
 
-%% 3. Setup fitting params %===================================================
+%% 3. Setup fitting params % ====================================
 
 % Compute the STA
 sps_coarse = sum(reshape(sps,[],slen),1)'; % bin spikes in bins the size of stimulus
@@ -83,27 +90,27 @@ gg0.ihw = randn(size(gg0.ihw))*1; % initialize spike-history weights randomly
 [negloglival0,rr] = neglogli_GLM(gg0,Stim);
 fprintf('Initial negative log-likelihood: %.5f\n', negloglival0);
 
-%% 4. Do ML fitting %=====================
+%% 4. Do ML fitting % ===========================================
 
 opts = {'display', 'iter', 'maxiter', 100}; % options for fminunc
 [gg1, negloglival] = MLfit_GLM(gg0,Stim,opts); % do ML (requires optimization toolbox)
 
-%% 5. Plot results ======================================================
-
+%% 5. Plot results % ============================================
 ttk = -nkt+1:0; % time bins for stimulus filter
+figure;
 
-subplot(221);  % True filter 
+subplot(2,2,1);  % -------- True filter 
 plot(ttk, ggsim.k, 'k', ttk, sta./norm(sta)*norm(ggsim.k), ttk, gg1.k, 'r');
 title('Stim filters');
 legend('k_{true}', 'k_{STA}', 'k_{ML}', 'location', 'northwest');
-% ----------------------------------
-subplot(222); 
+
+subplot(2,2,2);  % --------
 plot(ggsim.iht, ggsim.ih, gg1.iht, gg1.ih,'r', ggsim.iht, ggsim.iht*0, 'k--');
 title('post-spike kernel');
 axis tight;
 legend('h_{true}', 'h_{ML}', 'location', 'southeast');
-% ----------------------------------
-subplot(224); 
+
+subplot(2,2,3:4); % --------
 plot(ggsim.iht, exp(ggsim.ih), gg1.iht, exp(gg1.ih),'r', ggsim.iht,ggsim.iht*0+1,'k--');
 title('exponentiated post-spike kernels');
 xlabel('time since spike (s)');
