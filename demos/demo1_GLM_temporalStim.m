@@ -47,7 +47,8 @@ Stim = rand(slen,swid)*2-1;  % Stimulate model to long, unif-random stimulus
 
 % Make plot of first 0.5 seconds of data
 tlen = 0.5;
-ttstim = dtStim:dtStim:tlen; iistim = 1:length(ttstim);
+ttstim = dtStim:dtStim:tlen;
+iistim = 1:length(ttstim);
 figure;
 
 subplot(311); % --------
@@ -55,7 +56,8 @@ plot(ttstim,Stim(iistim));
 title('stimulus');
 
 subplot(312); % --------
-ttspk = dtSp:dtSp:tlen; iispk = 1:length(ttspk);
+ttspk = dtSp:dtSp:tlen; 
+iispk = 1:length(ttspk);
 spinds = sps(iispk)>0;
 semilogy(ttspk,exp(Itot(iispk)),ttspk(spinds), exp(Itot(spinds)), 'ko');
 ylabel('spike rate (sp/s)');
