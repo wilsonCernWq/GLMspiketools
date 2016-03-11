@@ -57,6 +57,8 @@ tlen = 0.5;
 ttstim = dtStim:dtStim:tlen; iistim = 1:length(ttstim);
 ttspk = dtSp:dtSp:tlen; iispk = 1:length(ttspk);
 spinds = sps(iispk)>0;
+figure;
+
 subplot(311); 
 imagesc([0 tlen], [1 nkx], Stim(iistim,:)'); 
 title('stimulus'); ylabel('pixel');
@@ -118,7 +120,7 @@ opts = {'display', 'iter'};
 
 
 %% 6. Plot results ====================
-%figure(3);
+figure;
 
 subplot(231);  % True filter  % ---------------
 imagesc(ggsim.k); colormap gray;
