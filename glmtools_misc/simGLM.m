@@ -47,7 +47,7 @@ function [tsp,sps,Itot,Istm] = simGLMsingle(glmprs,Stim,upSampFactor)
     
 % --------------- Check Inputs ----------------------------------
 nbinsPerEval = 100;  % Default number of bins to update for each spike
-dt = glmprs.dtSp; % bin size for simulation
+dt = glmprs.dtSp;    % bin size for simulation
 
 slen = size(Stim,1); % length of stimulus
 rlen = slen*upSampFactor;  % length of binned spike response
