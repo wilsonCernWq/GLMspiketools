@@ -1,12 +1,14 @@
-function gg = makeFittingStruct_GLM(dtStim,dtSp,klength,nkbasis,k0,nhbasis,lasthpeak)
-% gg = makeFittingStruct_GLM(dtStim,dtSp,klength,nkbasis,k0,nhbasis,lasthpeak)
+function gg = makeFittingStruct_GLM...
+   (dtStim,dtSpik,klength,nkbasis,k0,nhbasis,lasthpeak)
+% gg = makeFittingStruct_GLM
+%      (dtStim,dtSp,klength,nkbasis,k0,nhbasis,lasthpeak)
 %
 % Initialize parameter structure for fitting GLM,
 % with normal parametrization of stim kernel
 %
 % Inputs:
 %      dtStim = bin size of stimulus (in s)
-%        dtSp = bin size for spike train (in s)
+%      dtSpik = bin size for spike train (in s)
 %     klength = temporal length of stimulus filter, in # of bins (optional)
 %     nkbasis = # temporal basis vectors for stim filter         (optional)
 %     nhbasis = # temporal basis vectors for spike hist filter h (optional)
@@ -31,7 +33,7 @@ gg.nlfun = @expfun; % default nonlinearity: exponential
 gg.sps = [];  % spike times (in s)
 gg.mask = []; % list of intervals to ignore when computing likelihood
 gg.dtStim = dtStim;  % time bin size for stimulus 
-gg.dtSp = dtSp;      % time bin for spike train 
+gg.dtSp = dtSpik;      % time bin for spike train 
 gg.ihw2 = [];      % weights for coupling filters 
 gg.ihbas2 = [];    % basis for coupling filters
 gg.ihbasprs2 = []; % parameters for coupling filter basis 
@@ -40,7 +42,8 @@ gg.couplednums = []; % numbers of coupled cells
 
 % % ----- Set up temporal basis for stimulus kernel -----------
 if nargin > 2
-    assert((klength>nkbasis), 'klength should be bigger than number of temporal basis vectors');
+    assert((klength>nkbasis), ...
+       'klength should be bigger than number of temporal basis vectors');
 
     ktbasprs.neye = 0; % number of "identity" basis vectors
     ktbasprs.ncos = nkbasis; % Number of raised-cosine vectors to use
@@ -61,10 +64,10 @@ end
 % ----- Set up basis for post-spike filter -----------------------
 if nargin > 5
     ihbasprs.ncols = nhbasis;  % Number of basis vectors for post-spike kernel
-    ihbasprs.hpeaks = [dtSp lasthpeak];  % Peak location for first and last vectors
+    ihbasprs.hpeaks = [dtSpik lasthpeak];  % Peak location for first and last vectors
     ihbasprs.b = lasthpeak/5;  % How nonlinear to make spacings (rough heuristic)
     ihbasprs.absref = []; % absolute refractory period (optional)
-    [iht,ihbas] = makeBasis_PostSpike(ihbasprs,dtSp);
+    [iht,ihbas] = makeBasis_PostSpike(ihbasprs,dtSpik);
     gg.iht = iht;
     gg.ihbas = ihbas;
     gg.ihbasprs = ihbasprs;

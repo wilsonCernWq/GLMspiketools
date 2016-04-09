@@ -1,10 +1,11 @@
-function [f,df,ddf] = logexp2(x);
+function [f,df,ddf] = logexp2(x)
 %  [f,df,ddf] = logexp_pow(x);
 %
 %  Implements the nonlinearity:  
-%     f(x) = log(1+exp(x)).^pow;
-%  where pow=2,
-%  plus first and second derivatives
+%    f(x)   = log(1+exp(x)).^pow ==>  pow = 2
+%    df(x)  = f'(x)
+%    ddf(x) = f''(x)
+%
 
 pow = 2;
 f0 = log(1+exp(x));
