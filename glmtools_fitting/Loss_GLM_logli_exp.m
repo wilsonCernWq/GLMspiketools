@@ -42,9 +42,12 @@ end
 rr = exp(Itot);
 
 % ---------  Compute log-likelihood ---------------------------------
-Trm1 = sum(rr)*dt;  % non-spike term
-Trm2 = -sum(Itot(bsps)); % spike term
+Trm1 =  sum(rr)*dt;        % non-spike term
+Trm2 = -sum(Itot(bsps));   % spike term
 logli = Trm1 + Trm2;
+
+% -- normalize logli (WU, QI)
+% logli = logli / sum(Xstruct.bsps);
 
 % ---------  Compute Gradient -----------------
 if (nargout > 1)
@@ -70,11 +73,13 @@ if (nargout > 1)
     end
     dL = [dLdk; dLdb; dLdh];
     
+    % -- normalize logli (WU, QI)
+    % dL = dL ./ sum(Xstruct.bsps);
+    
 end
 
 % ---------  Compute Hessian -----------------
-if nargout > 2
-    % --- Non-spiking terms -----
+if nargout > 2    
     
     % multiply each row of M with drr
     ddrrdiag = spdiags(rr,0,rlen,rlen); 
@@ -93,7 +98,10 @@ if nargout > 2
     else
         Hkh=[]; Hhb=[]; Hh=[];
     end
-
     H = [[Hk Hkb Hkh]; [Hkb' Hb Hhb']; [Hkh' Hhb Hh]];
+    
+    % -- normalize logli (WU, QI)
+    % H = H ./ sum(Xstruct.bsps);
+    
 end
 
