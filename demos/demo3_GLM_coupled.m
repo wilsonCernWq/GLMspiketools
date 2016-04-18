@@ -126,7 +126,7 @@ gg0.sps2 = sps(:,2);
 
 % Do ML fitting
 fprintf('Fitting neuron 1:  initial neglogli0 = %.3f\n', neglogli0);
-opts = {'display', 'iter', 'maxiter', 100};
+opts = {'display', 'iter', 'maxiter', 1000};
 [gg1, neglogli1] = GLMfitML(gg0,Stim,opts); % do ML (requires optimization toolbox)
 
 
@@ -169,5 +169,3 @@ plot(ggsim.iht, (ggsim.ih(:,:,2)), gg2.iht, (gg2.ih), '--');
 title('exponentiated incoming h filters');
 axis tight; xlabel('time (s)')
 legend('true h22', 'true h12', 'estim h22', 'estim h12');
-
-

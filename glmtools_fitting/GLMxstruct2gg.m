@@ -55,6 +55,23 @@ elseif strcmp(gg.ktype, 'bilinear')
    gg.ihw2 = reshape(prs(nktot+nh+2:end), nh2, []);
    gg.k = (gg.ktbas*gg.kt)*(gg.kxbas*gg.kx)';
    
+elseif strcmp(gg.ktype, 'offset')
+   
+   % Extract relevant size information
+   nkt = Xstruct.nkt;
+   nkx = Xstruct.nkx;
+   nktot = nkt * nkx;
+   nh = Xstruct.nh;
+   nh2 = Xstruct.nh2;
+   
+   % Insert params
+   gg.kt = reshape(prs(1:nktot),nkt,nkx);
+   gg.k = gg.ktbas * gg.kt;
+   gg.dc = prs(nktot+1);
+   gg.ihw = reshape(prs(nktot+2:nktot+nh+1), nh,1);
+   gg.ihw2 = reshape(prs(nktot+nh+2:end-1), nh2, []);
+   gg.offset = prs(end);
+   
 end
 
 % Ensure these bases are 'empty' if no spike history filters

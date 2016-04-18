@@ -166,6 +166,11 @@ elseif strcmp(fittype,'nobasis')
    gg.ktype = 'nobasis';
    gg = rmfield(gg, {'ktbasprs','ktbas','kt'});
    
+elseif strcmp(fittype,'offset')
+   
+   gg.ktype = 'offset';
+   gg.offset = 0.0;
+   
 end
 
 end

@@ -57,6 +57,19 @@ elseif strcmp(gg.ktype, 'bilinear');
       [fval,~,H] = Loss_GLM_logli_bi(prsML);
    end
    
+elseif strcmp(gg.ktype, 'offset');
+   
+   % loss function for exponential nonlinearity
+   lfunc = @(prs)Loss_GLM_logli_offset(prs,Xstruct);
+   
+   % optimize negative log-likelihood for prs
+   [prsML,fval] = fminunc(lfunc,prs0,opts); 
+   
+   % Compute Hessian at maximum, if requested
+   if nargout > 2
+      [fval,~,H] = Loss_GLM_logli_offset(prsML);
+   end
+   
 end
 
 % Put returned vals back into param structure

@@ -40,6 +40,14 @@ elseif strcmp(gg.ktype, 'nobasis')
    % extract parameter vector
    prs0 = [gg.k(:); gg.dc; gg.ihw(:); gg.ihw2(:)];
    
+elseif strcmp(gg.ktype, 'offset')
+   
+   % create design matrix structure
+   Xstruct = GLMgg2xstruct_offset(gg,Stim);
+   
+   % extract parameter vector
+   prs0 = [gg.kt(:); gg.dc; gg.ihw(:); gg.ihw2(:); gg.offset];
+   
 else
    
    error('unknown filter type (allowed types are ''linear'' or ''bilinear'')');
