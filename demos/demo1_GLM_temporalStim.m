@@ -83,7 +83,7 @@ exptmask= []; %[1 slen*dtStim];  % data range to use for fitting (in s).
 nkbasis = 8;  % number of basis vectors for representing k
 nhbasis = 8;  % number of basis vectors for representing h
 hpeakFinal = .1;   % time of peak of last basis vector for h
-gg0 = makeFittingStruct_GLM(dtStim,dtSp,nkt,nkbasis,sta,nhbasis,hpeakFinal);
+gg0 = GLMmakeFitStruct('linear',dtStim,dtSp,nkt,nkbasis,sta,nhbasis,hpeakFinal);
 gg0.sps = sps;  % Insert binned spike train into fitting struct
 gg0.mask = exptmask; % insert mask (optional)
 gg0.ihw = randn(size(gg0.ihw))*1; % initialize spike-history weights randomly
@@ -95,7 +95,7 @@ fprintf('Initial negative log-likelihood: %.5f\n', negloglival0);
 %% 4. Do ML fitting % ===========================================
 
 opts = {'display', 'iter', 'maxiter', 100}; % options for fminunc
-[gg1, negloglival] = MLfit_GLM(gg0,Stim,opts); % do ML (requires optimization toolbox)
+[gg1, negloglival] = GLMfitML(gg0,Stim,opts); % do ML (requires optimization toolbox)
 
 %% 5. Plot results % ============================================
 ttk = -nkt+1:0; % time bins for stimulus filter

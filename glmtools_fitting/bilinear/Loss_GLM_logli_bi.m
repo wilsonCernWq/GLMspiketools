@@ -1,4 +1,4 @@
-function [logli, dL, H] = Loss_GLMbi_logli(prs,Xstruct)
+function [logli, dL, H] = Loss_GLM_logli_bi(prs,Xstruct)
 % [logli, dL, H] = Loss_GLMbi_logli(prs,Xstruct)
 %
 % Compute negative log-likelXXspood of data undr the GLM model, with bilinear

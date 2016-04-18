@@ -100,7 +100,7 @@ sta2 = simpleSTC(Stim,sps2,nkt); % Compute STA 2
 sta2 = reshape(sta2,nkt,[]); 
 
 % Initialize param struct for fitting 
-gg0 = makeFittingStruct_GLM(dtStim,dtSp);  % Initialize params for fitting struct 
+gg0 = GLMmakeFitStruct('linear',dtStim,dtSp);  % Initialize params for fitting struct 
 
 % Initialize fields (using h and k bases computed above)
 gg0.ktbas = ktbas; % k basis
@@ -127,7 +127,7 @@ gg0.sps2 = sps(:,2);
 % Do ML fitting
 fprintf('Fitting neuron 1:  initial neglogli0 = %.3f\n', neglogli0);
 opts = {'display', 'iter', 'maxiter', 100};
-[gg1, neglogli1] = MLfit_GLM(gg0,Stim,opts); % do ML (requires optimization toolbox)
+[gg1, neglogli1] = GLMfitML(gg0,Stim,opts); % do ML (requires optimization toolbox)
 
 
 %% ===== 5. Fit cell #2 (with coupling from cell #1) ==================
@@ -144,7 +144,7 @@ gg0.couplednums = 1; % number of cell coupled to this one
 
 % Do ML fitting
 fprintf('Fitting neuron 2: initial neglogli = %.3f\n', neglogli0b);
-[gg2, neglogli2] = MLfit_GLM(gg0b,Stim,opts); % do ML (requires optimization toolbox)
+[gg2, neglogli2] = GLMfitML(gg0b,Stim,opts); % do ML (requires optimization toolbox)
 
 
 %% ===== 6. Plot fits  ============================================= %%

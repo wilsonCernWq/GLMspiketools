@@ -1,4 +1,4 @@
-function bmask = initfit_mask(mask,dtSp,rlen)
+function bmask = GLMinitFitMask(mask,dtSp,rlen)
 % bmask = initfit_mask(mask,dtSp,rlen)
 %
 % Compute binary mask for computing log-likelihood

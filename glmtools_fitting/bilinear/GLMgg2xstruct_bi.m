@@ -1,4 +1,4 @@
-function Xstruct = initfit_stimDesignMat_bi(gg,Stim)
+function Xstruct = GLMgg2xstruct_bi(gg,Stim)
 % Xstruct = initfit_stimDesignMat_bi(gg,Stim)
 %  
 % Initialize parameters relating to stimulus design matrix for bilinearly

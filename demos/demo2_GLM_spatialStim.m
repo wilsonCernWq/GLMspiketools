@@ -31,6 +31,7 @@ ggsim.k = k; % Insert into simulation struct
 ggsim.dc = 2; 
 
 % === Make Fig: model params =======================
+figure;
 clf; subplot(3,3,[1 4]); % ------------------------------------------
 plot(kt,ttk);  axis tight;
 set(gca, 'ydir', 'reverse'); ylabel('time (frames)');
@@ -43,7 +44,6 @@ title('stimulus kernel k');
 subplot(3,3,8:9); % ----------------------------------------
 plot(xxk,kx); axis tight;
 set(gca, 'xlim', [.5 nkx+.5]); xlabel('space (pixels)');
-
 
 %% 2. Generate some training data ========================================
 
@@ -74,8 +74,6 @@ plot(ttspk,Istm(iispk), ttspk,Isp(iispk)); axis tight;
 legend('k output', 'h output'); xlabel('time (s)');
 ylabel('log intensity'); title('filter outputs');
 
-
-
 %% 3. Fit GLM (traditional version) via max likelihood
 
 % Compute the STA
@@ -90,7 +88,7 @@ exptmask= [];  % Not currently supported!
 nkbasis = 8;  % number of basis vectors for representing k
 nhbasis = 8;  % number of basis vectors for representing h
 hpeakFinal = .1;   % time of peak of last basis vector for h
-gg0 = makeFittingStruct_GLM(dtStim,dtSp,nkt,nkbasis,sta,nhbasis,hpeakFinal);
+gg0 = GLMmakeFitStruct('nobasis',dtStim,dtSp,nkt,nkbasis,sta,nhbasis,hpeakFinal);
 gg0.sps = sps;  % Insert binned spike train into fitting struct
 gg0.mask = exptmask; % insert mask (optional)
 gg0.ihw = randn(size(gg0.ihw))*1; % initialize spike-history weights randomly
@@ -101,14 +99,13 @@ fprintf('Initial negative log-likelihood: %.5f\n', negloglival0);
 
 % Do ML estimation of model params
 opts = {'display', 'iter', 'maxiter', 100};
-[gg1, negloglival1a] = MLfit_GLM(gg0,Stim,opts); % do ML (requires optimization toolbox)
-
+[gg1, negloglival1a] = GLMfitML(gg0,Stim,opts); % do ML (requires optimization toolbox)
 
 %% 5. Fit GLM ("bilinear stim filter version") via max likelihood
 
 %  Initialize params for fitting --------------
 k_rank = 1; % Number of column/row vector pairs to use
-gg0b = makeFittingStruct_GLMbi(k_rank,dtStim,dtSp,nkt,nkbasis,sta,nhbasis,hpeakFinal);
+gg0b = GLMmakeFitStruct('bilinear',dtStim,dtSp,nkt,nkbasis,sta,nhbasis,hpeakFinal,k_rank);
 gg0b.sps = sps;
 gg0b.mask = exptmask;
 logli0b = neglogli_GLM(gg0b,Stim); % Compute logli of initial params
@@ -116,7 +113,7 @@ fprintf('Initial value of negative log-li (GLMbi): %.3f\n', logli0b);
 
 % Do ML estimation of model params
 opts = {'display', 'iter'};
-[gg2, negloglival2] = MLfit_GLMbi(gg0b,Stim,opts); % do ML (requires optimization toolbox)
+[gg2, negloglival2] = GLMfitML(gg0b,Stim,opts); % do ML (requires optimization toolbox)
 
 
 %% 6. Plot results ====================
@@ -133,10 +130,13 @@ subplot(233); % sta-projection % ---------------
 imagesc(gg0.k); title('low-rank STA');
 
 subplot(234); % estimated filter % ---------------
-imagesc(gg1.k); title('ML estimate: full filter'); xlabel('space'); ylabel('time');
+imagesc(gg1.k); title(['MLE: ',gg1.ktype]);
+xlabel('space');
+ylabel('time');
 
 subplot(235); % estimated filter % ---------------
-imagesc(gg2.k); title('ML estimate: bilinear filter'); xlabel('space'); 
+imagesc(gg2.k); title(['MLE: ',gg2.ktype]);
+xlabel('space'); 
 
 subplot(236); % ----------------------------------
 plot(ggsim.iht,exp(ggsim.ih),'k', gg1.iht,exp(gg1.ihbas*gg1.ihw),'b',...

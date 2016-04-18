@@ -1,4 +1,4 @@
-function [ggnew,neglogli] = initializeSplineNlin_GLM(gg,Stim,prs,optimargs)
+function [ggnew,neglogli] = GLMinitSplineNonLinear(gg,Stim,prs,optimargs)
 %  [ggnew,neglogli] = initializeSplineNlin_GLM(gg,Stim,prs,optimargs)
 % 
 %  Initializes parameters for a spline nonlinearity using likelihood under
@@ -19,7 +19,7 @@ function [ggnew,neglogli] = initializeSplineNlin_GLM(gg,Stim,prs,optimargs)
 %     ggnew = new param struct (with ML params);
 %     fval = negative log-likelihood at ML estimate
 
-[NONE,NONE,NONE,II] = neglogli_GLM(gg,Stim); % Get total currents from GLM
+[~,~,~,II] = neglogli_GLM(gg,Stim); % Get total currents from GLM
 
 % Set knots and insert piece-wise linear nonlinearity.
 knotwin  = quantile(II,prs.epprob);
@@ -29,16 +29,18 @@ knots = knotwin(1):diff(knotwin)/prs.nknots:knotwin(2);
 xx1 = min(II):.1:max(knots);
 yy1 = exp(xx1)+10;
 fprintf('... Least-squares fitting spline (fitSpline.m) ...\n');
-[NONE,NONE,Mspline0,nlprs0]=fitSpline(knots,xx1,yy1,prs.smthness,prs.extrapDeg);
+[~,~,Mspline0,nlprs0]=fitSpline(knots,xx1,yy1,prs.smthness,prs.extrapDeg);
 
 % Make a strictly positive verstion of this spline
-[zz,pp0] = makeSplinePos(knots,Mspline0*nlprs0,prs.minval);
+[~,pp0] = makeSplinePos(knots,Mspline0*nlprs0,prs.minval);
 
 % Now fit nonlinearity via maximum likelihood
 gg.nlprs.ppstruct = pp0;
 gg.nlprs.splinePrs = prs;
 fprintf('... ML fitting spline (MLfit_splineNlin.m) ...\n');
 [ggnew,neglogli]= MLfit_splineNlin_GLM(gg,Stim,optimargs);
+
+end
 
 
 

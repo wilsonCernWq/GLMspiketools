@@ -1,4 +1,4 @@
-function Xstruct = initfit_stimDesignMat(gg,Stim)
+function Xstruct = GLMgg2xstruct(gg,Stim)
 % Xstruct = initfit_stimDesignMat(gg,Stim)
 %  
 % Initialize parameters relating to stimulus design matrix 
@@ -18,7 +18,7 @@ assert(nkx == swid,'Mismatch between stim width and kernel width');
 % ---- Convolve stimulus with spatial and temporal bases -----
 Xstruct.Xstim = zeros(slen,ncols);
 for i = 1:nkx
-    for j = 1:nkt
+    for j = 1:nkt       
         Xstruct.Xstim(:,(i-1)*nkt+j) = sameconv(Stim(:,i),gg.ktbas(:,j));
     end
 end
